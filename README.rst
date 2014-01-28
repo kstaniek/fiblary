@@ -70,8 +70,9 @@ but also like a proprerty::
 
 Easy, eh?
 
-
 For the managers that ``Client`` supports the full set of options is implemented.
+
+Please refer to the example code attached to the project.
 
 
 License

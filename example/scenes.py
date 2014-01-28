@@ -95,12 +95,12 @@ def main():
     print_table(scenes)
 
     time.sleep(60)
-    
+
     print("Scene {} stopping".format(scene_id))
     scene.stop()
     scenes = hc2.scenes.findall(name="fiblaro_test_scene")
     print_table(scenes)
-    
+
     print("Deleting test scenes")
     for scene in scenes:
         hc2.scenes.delete(scene.id)

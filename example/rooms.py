@@ -20,8 +20,6 @@ import prettytable as pt
 
 from fiblary.client import Client
 
-import time
-
 
 logging.basicConfig(
     format='%(asctime)-15s %(levelname)s: %(module)s:%(funcName)s'
@@ -42,6 +40,7 @@ def print_section_table(sections):
             section.sortOrder])
 
     print(table)
+
 
 def print_room_table(rooms):
     table = pt.PrettyTable([
@@ -76,12 +75,12 @@ def main():
         'admin',
         'admin'
     )
-    
+
     sections = hc2.sections.list()
     print_section_table(sections)
     print("Adding new section")
     section = hc2.sections.create(name="fiblaro_test_section")
-    
+
     sections = hc2.sections.list()
     print_section_table(sections)
 
@@ -92,12 +91,12 @@ def main():
     room = hc2.rooms.create(name="fiblaro_test_room", sectionID=section.id)
     rooms = hc2.rooms.list()
     print_room_table(rooms)
-    
+
     print("Changing the room name")
     room.name = "fiblaro_test_room_1"
     room = hc2.rooms.update(room)
     print("Changing the room name to: {}".format(room.name))
-    
+
     rooms = hc2.rooms.findall(name="fiblaro_test_room_1")
     print_room_table(rooms)
 
@@ -107,7 +106,7 @@ def main():
 
     rooms = hc2.rooms.findall(name="fiblaro_test_room_1")
     print_room_table(rooms)
-    
+
     sections = hc2.sections.findall(name="fiblaro_test_section")
     print_section_table(sections)
 
@@ -117,8 +116,7 @@ def main():
 
     sections = hc2.sections.findall(name="fiblaro_test_section")
     print_section_table(sections)
-    
-    
+
     exit()
 
 

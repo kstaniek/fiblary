@@ -81,11 +81,10 @@ def main():
             device.turnOff()
         else:
             device.turnOn()
-            
+
     except exceptions.NotFound:
         print("Device not found")
 
-    
 
 if __name__ == '__main__':
     main()

@@ -19,8 +19,8 @@
  Home Center Device Manager Implementation
 """
 
-from fiblary.common import exceptions
 from fiblary.client.v3 import base
+from fiblary.common import exceptions
 
 import logging
 import types
