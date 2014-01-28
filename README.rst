@@ -10,6 +10,23 @@ control the Z-wave devices and run scenes managed by HC.
 It also provides access and methods to variables, users, room
 and sections defined on Home Center.
 
+Installation
+------------
+
+Install PBR first because of pbr bug::
+    
+    pip install pbr
+    
+Then clone and install fiblary::
+    
+    git clone https://github.com/kstaniek/fiblary.git
+    cd fiblary
+    python setup.py install
+     
+
+Basic usage
+-----------
+
 The main client object contains several managers controlling a basic
 functions of HC:
 
@@ -30,7 +47,7 @@ It's easiest to to get some basic information about the Home Center::
     # Connect to Home Center
     hc = Client('v3', 'http://192.168.1.1/api', 'admin', 'admin')
     
-    # Retrieve the basic info asreturned by /api/info
+    # Retrieve the basic info as returned by /api/info
     info = hc.info.get()
     
     print(info)
