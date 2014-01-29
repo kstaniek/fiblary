@@ -73,14 +73,10 @@ class MinimalController(object):
         return self.model(**item)
 
 
-class CommonController(MinimalController):
-    """Common controller class used as a base class for more specific
-    contollers.
+class ReadOnlyController(MinimalController):
+    """Read only controller class used for controllers using get and list
+    methods only
     """
-
-    def __init__(self, http_client, model):
-        self.http_client = http_client
-        self.model = model
 
     def list(self, **kwargs):
         _logger.debug(self.RESOURCE)
@@ -96,6 +92,37 @@ class CommonController(MinimalController):
                 yield item_obj
             else:
                 continue
+
+    def find(self, **kwargs):
+        """Find single item with attributes matching ``**kwargs``.
+        It also handles nested properties as a keywords.
+        """
+        num_matches = 0
+        found = None
+        for item in self.list():
+            if _check_items(item, kwargs.items()):
+                found = item
+                num_matches += 1
+                if num_matches > 1:  # raise exception not waiting
+                                    # for the whole list walkthrough
+                    raise exceptions.NoUniqueMatch
+
+        if not found:
+            msg = "No matching {0}".format(kwargs)
+            raise exceptions.NotFound(msg)
+
+        return found
+
+    def findall(self, **kwargs):
+        return [item for item in self.list() if _check_items(
+            item,
+            kwargs.items())]
+
+
+class CommonController(ReadOnlyController):
+    """Common controller class used as a base class for controllers
+    implementing method changing the data
+    """
 
     def create(self, **kwargs):
         item = self.model(**kwargs)
@@ -139,28 +166,3 @@ class CommonController(MinimalController):
             return None
 
         return self.model(**item)
-
-    def find(self, **kwargs):
-        """Find single item with attributes matching ``**kwargs``.
-        It also handles nested properties as a keywords.
-        """
-        num_matches = 0
-        found = None
-        for item in self.list():
-            if _check_items(item, kwargs.items()):
-                found = item
-                num_matches += 1
-                if num_matches > 1:  # raise exception not waiting
-                                    # for the whole list walkthrough
-                    raise exceptions.NoUniqueMatch
-
-        if not found:
-            msg = "No matching {0}".format(kwargs)
-            raise exceptions.NotFound(msg)
-
-        return found
-
-    def findall(self, **kwargs):
-        return [item for item in self.list() if _check_items(
-            item,
-            kwargs.items())]

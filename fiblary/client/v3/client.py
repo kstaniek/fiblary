@@ -24,6 +24,7 @@ import threading
 import warlock
 
 from fiblary.client.v3 import devices
+from fiblary.client.v3 import events
 from fiblary.client.v3 import info
 from fiblary.client.v3 import login
 from fiblary.client.v3 import rooms
@@ -107,6 +108,11 @@ class Client(object):
             self._get_weather_model()
         )
 
+        self.events = events.Controller(
+            self.client,
+            self._get_event_model()
+        )
+
         self.state_handler = None
 
     def _get_info_model(self):
@@ -135,6 +141,10 @@ class Client(object):
 
     def _get_weather_model(self):
         schema = self.schemas.get('weather')
+        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
+
+    def _get_event_model(self):
+        schema = self.schemas.get('event')
         return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
 
     def _get_scene_model(self):
