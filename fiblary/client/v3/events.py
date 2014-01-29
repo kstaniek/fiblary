@@ -13,14 +13,14 @@
 #   limitations under the License.
 
 """
- fiblary.events
+ fiblary.info
  ~~~~~~~~~~~~~~
 
- Home Center Events Manager Implementation
+ Home Center Info Manager Implementation
 """
 
 from fiblary.client.v3 import base
 
 
-class Controller(base.MinimalController):
-    RESOURCE = '/settings/info'
+class Controller(base.ReadOnlyController):
+    RESOURCE = '/panels/event'

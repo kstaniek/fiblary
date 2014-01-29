@@ -33,6 +33,7 @@ functions of HC:
 * Variables,
 * Scenes,
 * Devices,
+* Events,
     
     and more.
 

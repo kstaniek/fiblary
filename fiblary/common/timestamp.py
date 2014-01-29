@@ -21,7 +21,17 @@
 """
 
 import datetime as dt
+import dateutil
 
 
 def timestamp_to_iso(timestamp):
     return dt.datetime.fromtimestamp(timestamp).isoformat(' ')
+
+
+def datetime_to_epoch(date_time):
+    return date_time.strftime('%s')
+    # return int((date_time - dt.datetime(1970,1,1)).total_seconds())
+
+
+def string_to_datetime(date_time):
+    return dateutil.parser.parse(date_time)
