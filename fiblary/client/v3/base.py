@@ -21,6 +21,7 @@
 """
 
 import logging
+import six
 import warlock
 
 from fiblary.common import exceptions
@@ -33,11 +34,11 @@ def _check_items(obj, searches):
     def _check_properities(attr, value):
         properties = getattr(obj, 'properties', None)
         if properties:
-            return str(properties.get(attr)) == str(value)
+            return properties.get(attr) == value
         return False
-
-    found = all(((unicode(getattr(obj, attr, None)) == str(value)) or
+    found = all(((getattr(obj, attr, None) == value) or
                 _check_properities(attr, value)) for (attr, value) in searches)
+
     return found
 
 
@@ -100,7 +101,7 @@ class ReadOnlyController(MinimalController):
         num_matches = 0
         found = None
         for item in self.list():
-            if _check_items(item, kwargs.items()):
+            if _check_items(item, six.iteritems(kwargs)):
                 found = item
                 num_matches += 1
                 if num_matches > 1:  # raise exception not waiting
@@ -116,7 +117,7 @@ class ReadOnlyController(MinimalController):
     def findall(self, **kwargs):
         return [item for item in self.list() if _check_items(
             item,
-            kwargs.items())]
+            six.iteritems(kwargs))]
 
 
 class CommonController(ReadOnlyController):
@@ -130,7 +131,7 @@ class CommonController(ReadOnlyController):
             try:
                 setattr(item, key, value)
             except warlock.InvalidOperation as e:
-                raise TypeError(unicode(e))
+                raise TypeError(six.u(e))
         try:
             response = self.http_client.post(self.RESOURCE, data=item)
         except exceptions.ConnectionError:
