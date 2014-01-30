@@ -75,12 +75,14 @@ def main():
             state))
 
     try:
-        device = hc2.devices.find(name="Blue lights")
+        device = hc2.devices.find(name=u'Blue lights')
         value = device.properties['value']
         if value == "1":
             device.turnOff()
+            print("Blue lights turned off")
         else:
             device.turnOn()
+            print("Blue lights turned on")
 
     except exceptions.NotFound:
         print("Device not found")

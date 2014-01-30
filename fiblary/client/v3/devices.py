@@ -24,6 +24,7 @@ from fiblary.common import exceptions
 
 import logging
 import types
+import six
 
 
 _logger = logging.getLogger(__name__)
@@ -39,7 +40,7 @@ def add_action(controller, model, k, v):
 
         return controller.action(model.id, k, *args)
 
-    setattr(model, k, types.MethodType(action, k, v))
+    setattr(model, k, types.MethodType(action, k))
 
 
 # TODO(kstaniek):
@@ -52,7 +53,7 @@ class Controller(base.CommonController):
     RESOURCE = '/devices'
 
     def _add_actions(self, model, actions):
-        for action, argn in actions.iteritems():
+        for action, argn in six.iteritems(actions):
             _logger.debug("{0}({1})<-{2}({3})".format(
                 model.name,
                 model.id,
