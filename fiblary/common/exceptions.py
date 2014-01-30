@@ -100,7 +100,6 @@ for obj_name in dir(sys.modules[__name__]):
 
 def from_response(response, details=True):
     """Return an instance of an HTTPException based on requests response."""
-    print("RESPONSE _______________: %s" % response.status_code)
     cls = _code_map.get(response.status_code, HTTPException)
     if details:
         details = response.reason

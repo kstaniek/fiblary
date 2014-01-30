@@ -1,5 +1,4 @@
 pbr
-dateutil
 jsonpatch>=1.3
 jsonschema>=2.3.0
 netaddr>=0.7.10
