@@ -17,6 +17,11 @@ Install PBR first because of pbr bug::
     
     pip install pbr
     
+Then install jsonpath. There is an issue when installing with pip
+so use ``easy_install``
+    
+    easy_install jsonpath
+    
 Then clone and install fiblary::
     
     git clone https://github.com/kstaniek/fiblary.git
