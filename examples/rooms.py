@@ -97,24 +97,24 @@ def main():
     room = hc2.rooms.update(room)
     print("Changing the room name to: {}".format(room.name))
 
-    rooms = hc2.rooms.findall(name="fiblaro_test_room_1")
+    rooms = hc2.rooms.list(name="fiblaro_test_room_1")
     print_room_table(rooms)
 
     print("Deleting rooms")
-    for room in rooms:
+    for room in hc2.rooms.list(name="fiblaro_test_room_1"):
         hc2.rooms.delete(room.id)
 
-    rooms = hc2.rooms.findall(name="fiblaro_test_room_1")
+    rooms = hc2.rooms.list(name="fiblaro_test_room_1")
     print_room_table(rooms)
 
-    sections = hc2.sections.findall(name="fiblaro_test_section")
+    sections = hc2.sections.list(name="fiblaro_test_section")
     print_section_table(sections)
 
     print("Deleting sections")
-    for section in sections:
+    for section in hc2.sections.list(name="fiblaro_test_section"):
         hc2.sections.delete(section.id)
 
-    sections = hc2.sections.findall(name="fiblaro_test_section")
+    sections = hc2.sections.list(name="fiblaro_test_section")
     print_section_table(sections)
 
     exit()

@@ -20,11 +20,13 @@
 
 """
 
+import jsonpath
 import logging
 import six
 import warlock
 
 from fiblary.common import exceptions
+from fiblary.common.utils import quote_if_string
 
 
 _logger = logging.getLogger(__name__)
@@ -50,6 +52,12 @@ class MinimalController(object):
     """
 
     RESOURCE = ''
+    API_PARAMS = ()
+    """API PARAMS can be directly passed to the RESTApi
+    This speed up the list operation
+    """
+
+    JSON_CONDITION_BASE = "(@.{0}=={1})"
 
     def __init__(self, http_client, model):
         self.http_client = http_client
@@ -82,10 +90,47 @@ class ReadOnlyController(MinimalController):
     def list(self, **kwargs):
         _logger.debug(self.RESOURCE)
         _logger.debug(type(self))
+
+        # Pop jsonpath if exists and pass the rest of arguments to API
+        # for some API calls home center handles additional parameters
+
+        json_path = kwargs.pop('jsonpath', None)
+
+        # Home center ignores unknown parameters so there is no need to
+        # remove them from REST reqest.
         try:
             items = self.http_client.get(self.RESOURCE, params=kwargs).json()
         except exceptions.ConnectionError:
-            yield None
+            return
+
+        # if there is no explicit defined json_path paramers
+        if json_path is None:
+            for value in self.API_PARAMS:
+                kwargs.pop(value, None)
+
+            condition_expression = ""
+            for k, v in six.iteritems(kwargs):
+                if k.startswith('p_'):  # search for properties
+                    k = "properties." + k[2:]
+                condition_expression += self.JSON_CONDITION_BASE.format(
+                    k,
+                    quote_if_string(v))
+                condition_expression += " and "
+
+            if condition_expression is not "":
+                # filter the results with json implicit built from
+                # remaining parameters
+
+                json_path = "$[?({})]".format(condition_expression[:-5])
+                _logger.debug("Implicit JSON Path: {}".format(json_path))
+
+        if json_path:
+            _logger.debug("JSON Path: {}".format(json_path))
+            filtered_items = jsonpath.jsonpath(items, json_path)
+            if filtered_items:
+                items = filtered_items
+            else:
+                return
 
         for item in items:
             item_obj = self.model(**item)
@@ -100,11 +145,11 @@ class ReadOnlyController(MinimalController):
         """
         num_matches = 0
         found = None
-        for item in self.list():
-            if _check_items(item, six.iteritems(kwargs)):
-                found = item
-                num_matches += 1
-                if num_matches > 1:  # raise exception not waiting
+        items = self.list(**kwargs)
+        for item in items:
+            found = item
+            num_matches += 1
+            if num_matches > 1:  # raise exception not waiting
                                     # for the whole list walkthrough
                     raise exceptions.NoUniqueMatch
 
@@ -114,8 +159,11 @@ class ReadOnlyController(MinimalController):
 
         return found
 
+    # depreciated
     def findall(self, **kwargs):
-        return [item for item in self.list() if _check_items(
+        _logger.warn(
+            "The 'findall' methon was depreciated. Use 'list' instead")
+        return [item for item in self.list(**kwargs) if _check_items(
             item,
             six.iteritems(kwargs))]
 

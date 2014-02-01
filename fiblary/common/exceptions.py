@@ -91,6 +91,10 @@ class HTTPMultipleChoices(HTTPException):
     code = 300
 
 
+class HTTPBadRequest(HTTPException):
+    """Bad Request"""
+    code = 400
+
 _code_map = {}
 for obj_name in dir(sys.modules[__name__]):
     if obj_name.startswith('HTTP'):

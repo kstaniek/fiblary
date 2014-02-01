@@ -92,7 +92,8 @@ class Schema(object):
         self.name = raw_schema['name']
 
     def raw(self):
-        return copy.deepcopy(self._raw_schema)
+        return self._raw_schema
+        # return copy.deepcopy(self._raw_schema)
 
 
 class Controller(object):

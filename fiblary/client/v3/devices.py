@@ -51,6 +51,7 @@ def add_action(controller, model, k, v):
 
 class Controller(base.CommonController):
     RESOURCE = '/devices'
+    API_PARAMS = ('id', 'type', 'roomID')
 
     def _add_actions(self, model, actions):
         for action, argn in six.iteritems(actions):
