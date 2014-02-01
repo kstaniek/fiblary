@@ -91,18 +91,18 @@ def main():
     scene.start()
     print("Scene {} running for 1 minute".format(scene_id))
 
-    scenes = hc2.scenes.findall(name="fiblaro_test_scene")
+    scenes = hc2.scenes.list(name="fiblaro_test_scene")
     print_table(scenes)
 
     time.sleep(60)
 
     print("Scene {} stopping".format(scene_id))
     scene.stop()
-    scenes = hc2.scenes.findall(name="fiblaro_test_scene")
+    scenes = hc2.scenes.list(name="fiblaro_test_scene")
     print_table(scenes)
 
     print("Deleting test scenes")
-    for scene in scenes:
+    for scene in hc2.scenes.list(name="fiblaro_test_scene"):
         hc2.scenes.delete(scene.id)
 
     scenes = hc2.scenes.findall(name="fiblaro_test_scene")

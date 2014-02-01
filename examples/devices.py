@@ -16,10 +16,10 @@
 #   limitations under the License.
 
 import logging
+import time
 
 from fiblary.client import Client
 from fiblary.common import exceptions
-
 
 logging.basicConfig(
     format='%(asctime)-15s %(levelname)s: %(module)s:%(funcName)s'
@@ -35,38 +35,83 @@ def main():
         'admin'
     )
 
-    rooms = dict((room.id, room) for room in hc2.rooms.list())
+    rooms = dict((room.id, room.name) for room in hc2.rooms.list())
 
-    open_doors = hc2.devices.findall(
-        type="door_sensor",
-        value="1",
-        disabled="0"
+    def get_room_name_from_id(room_id):
+        try:
+            return rooms[room_id]
+        except KeyError:
+            return "Not assigned"
+
+    start = time.time()
+    open_doors = hc2.devices.list(
+        type="door_sensor",  # type handled directly by RESTApi
+        p_value="1",    # for properties prepend with p_
+        p_disabled="0"
     )
 
-    print("Currently open doors:")
+    print("Open doors:")
     for device in open_doors:
         room_id = device.roomID
-        room_name = rooms[room_id].name
+        room_name = get_room_name_from_id(room_id)
         print("  {}({}) in {}".format(device.name, device.id, room_name))
 
-    open_windows = hc2.devices.findall(
+    stop = time.time()
+    print("Command execution time: {0:.2f}s".format(stop - start))
+
+    start = time.time()
+    open_doors = hc2.devices.list(
+        type="door_sensor",
+        jsonpath="$[?(@.properties.value=='1'"
+        " && @.properties.disabled=='0')]")
+
+    print("\nOpen doors:")
+    for device in open_doors:
+        room_id = device.roomID
+        room_name = get_room_name_from_id(room_id)
+        print("  {}({}) in {}".format(device.name, device.id, room_name))
+
+    stop = time.time()
+    print("Command execution time: {0:.2f}s".format(stop - start))
+
+    start = time.time()
+    open_windows = hc2.devices.list(
         type="window_sensor",
-        value="1",
-        disabled="0"
+        p_value="1",
+        p_disabled="0"
     )
 
-    print("Currently open windows:")
+    print("\nOpen windows:")
     for device in open_windows:
         room_id = device.roomID
-        room_name = rooms[room_id].name
+        room_name = get_room_name_from_id(room_id)
         print("  {}({}) in {}".format(device.name, device.id, room_name))
 
-    lights = hc2.devices.findall(isLight="1", disabled="0")
+    stop = time.time()
+    print("Command execution time: {0:.2f}s".format(stop - start))
 
-    print("Lights:")
+    start = time.time()
+    open_windows = hc2.devices.list(
+        type="window_sensor",
+        jsonpath="$[?(@.properties.value=='1'"
+        " && @.properties.disabled=='0')]")
+
+    print("\nOpen windows:")
+    for device in open_windows:
+        room_id = device.roomID
+        room_name = get_room_name_from_id(room_id)
+        print("  {}({}) in {}".format(device.name, device.id, room_name))
+
+    stop = time.time()
+    print("Command execution time: {0:.2f}s".format(stop - start))
+
+    start = time.time()
+    lights = hc2.devices.list(p_disabled="0", p_isLight="1")
+
+    print("\nLights:")
     for device in lights:
         room_id = device.roomID
-        room_name = rooms[room_id].name
+        room_name = get_room_name_from_id(room_id)
         state = "on" if device.properties['value'] == "1" else "off"
         print("  {}({}) in {} is {}".format(
             device.name,
@@ -74,19 +119,48 @@ def main():
             room_name,
             state))
 
+    stop = time.time()
+    print("Command execution time: {0:.2f}s".format(stop - start))
+
+    start = time.time()
+    lights = hc2.devices.list(
+        jsonpath="$[?(@.properties.disabled=='0'"
+        " && @.properties.isLight=='1')]")
+
+    print("\nLights:")
+    for device in lights:
+        room_id = device.roomID
+        room_name = get_room_name_from_id(room_id)
+        state = "on" if device.properties['value'] == "1" else "off"
+        print("  {}({}) in {} is {}".format(
+            device.name,
+            device.id,
+            room_name,
+            state))
+
+    stop = time.time()
+    print("Command execution time: {0:.2f}s".format(stop - start))
+
+    start = time.time()
     try:
         device = hc2.devices.find(name=u'Blue lights')
         value = device.properties['value']
         if value == "1":
             device.turnOff()
-            print("Blue lights turned off")
+            print("\nBlue lights turned off")
         else:
             device.turnOn()
-            print("Blue lights turned on")
+            print("\nBlue lights turned on")
 
     except exceptions.NotFound:
-        print("Device not found")
+        print("\nBlue Lights not found")
+    stop = time.time()
+    print("Command execution time: {0:.2f}s".format(stop - start))
 
+    try:
+        device = hc2.devices.find(type='binary_light')
+    except exceptions.NoUniqueMatch:
+        print("\nMore then one device matching the criteria")
 
 if __name__ == '__main__':
     main()

@@ -84,15 +84,16 @@ def main():
     events = hc2.events.list(last='100', type='id')
     print_table(events, devices, rooms)
 
-    print("List of last 10 events for device id=114")
+    print("\nList of last 10 events for device id=114")
     events = hc2.events.list(last='10', type='id', deviceID='114')
     print_table(events, devices, rooms)
 
     print(
-        "List of all events for specific datetime 2014-01-28 9:00:00"
-        " - 2014-01-28 12:00:00")
-    start_datetime = datetime_to_epoch(dt.datetime(2014, 1, 28, 9, 0))
-    stop_datetime = datetime_to_epoch(dt.datetime(2014, 1, 28, 12, 0))
+        "\nList of all events for specific datetime range\n"
+        "2014-01-28 9:00:00 - 2014-01-28 12:00:00")
+
+    start_datetime = datetime_to_epoch(dt.datetime(2014, 1, 28, 9, 0, 0))
+    stop_datetime = datetime_to_epoch(dt.datetime(2014, 1, 28, 12, 0, 0))
 
     """" File "./events.py", line 102
     events = hc2.events.list(from=start_datetime, to=stop_datetime)
@@ -112,14 +113,32 @@ def main():
     print_table(events, devices, rooms)
 
     print(
-        "List of all events for specific datetime 2014-01-28 9:00:00"
-        " - 2014-01-28 12:00:00 for device ID=169")
+        "\nList of all events for specific datetime range\n"
+        "2014-01-28 9:00:00 - 2014-01-28 12:00:00 for device ID=169\n"
+        "and having oldValue = 390.1 - Implicit jsonpath test")
+
+    args = {
+        'from': start_datetime,  # passed to RESTApi
+        'to': stop_datetime,  # passed to RESTApi
+        'type': 'time',  # passed to RESTApi
+        'deviceID': 169,  # passed to RESTApi
+        'oldValue': 390.1  # this value is filtered out by jsonpath
+    }
+
+    events = hc2.events.list(**args)
+    print_table(events, devices, rooms)
+
+    print(
+        "\nList of all events for specific datetime range\n"
+        "2014-01-28 9:00:00 - 2014-01-28 12:00:00 for device ID=169\n"
+        "and having newValue > 390 and < 390.2 - Explicit jsonpath test")
 
     args = {
         'from': start_datetime,
         'to': stop_datetime,
         'type': 'time',
-        'deviceID': 169
+        'deviceID': 169,
+        'jsonpath': "$[?(@.newValue>390 && @.newValue<390.2)]"
     }
 
     events = hc2.events.list(**args)

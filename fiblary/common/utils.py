@@ -34,3 +34,10 @@ def import_versioned_module(module, version, submodule=None):
     if submodule:
         module = '.'.join((module, submodule))
     return import_module(module)
+
+
+def quote_if_string(value):
+    if type(value) in [str, unicode]:
+        return "'{0}'".format(value)
+    else:
+        return value
