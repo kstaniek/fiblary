@@ -261,8 +261,13 @@ class StateHandler(threading.Thread):
                 try:
                     state = self.api.get(
                         '/refreshStates?last={}'.format(last),
-                        timeout=timeout).json()
+                        timeout=timeout)
                     _logger.debug(state)
+                    try:
+                        state = state.json()
+                    except:
+                        _logger.critical("JSON ERROR: {}".format(state))
+                        raise
                     last = state['last']
                     self.callback(state)
                     success = True
