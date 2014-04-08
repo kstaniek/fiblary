@@ -33,20 +33,20 @@ _logger = logging.getLogger(__name__)
 
 
 def _check_items(obj, searches):
-    def _check_properities(attr, value):
+    def _check_properties(attr, value):
         properties = getattr(obj, 'properties', None)
         if properties:
             return properties.get(attr) == value
         return False
     found = all(((getattr(obj, attr, None) == value) or
-                _check_properities(attr, value)) for (attr, value) in searches)
+                _check_properties(attr, value)) for (attr, value) in searches)
 
     return found
 
 
 class MinimalController(object):
     """Minimal controller class used as a base class for more
-    specific contollers.
+    specific controllers.
 
     It implements simple get method for read only resources.
     """
@@ -64,7 +64,7 @@ class MinimalController(object):
         self.model = model
 
     def get(self, item_id=None):
-        """Returns :class:`warlock.model.Model` object represenring an item
+        """Returns :class:`warlock.model.Model` object representing an item
         identified by ``item_id``
 
         :param item_id: This is an id of the requested object. The item_id
