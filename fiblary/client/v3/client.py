@@ -273,10 +273,15 @@ class StateHandler(threading.Thread):
                     success = True
                     break
 
-                except exceptions.ConnectionError:
-                    _logger.warn("Connection Error. Attempt number: {}".format(
-                        attempt)
+                except (
+                        exceptions.ConnectionError,
+                        exceptions.HTTPException) as e:
+                    _logger.warn(
+                        "Connection Error. Attempt number: {}".format(
+                            attempt)
                     )
+                    _logger.exception("Exception: {}".format(e))
+
                     attempt += 1
 
                 if not success:
