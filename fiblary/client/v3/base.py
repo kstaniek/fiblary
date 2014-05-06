@@ -63,7 +63,7 @@ class MinimalController(object):
         self.http_client = http_client
         self.model = model
 
-    def get(self, item_id=None):
+    def get(self, item_id):
         """Returns :class:`warlock.model.Model` object representing an item
         identified by ``item_id``
 
@@ -71,12 +71,12 @@ class MinimalController(object):
         encoded in GET request as the 'id' parameter
         :returns: :class:`warlock.model.Model` object
         """
-        params = {}
-        if item_id:
-            params = {"id": item_id}
+        params = {"id": item_id}
         try:
             item = self.http_client.get(self.RESOURCE, params=params).json()
         except exceptions.ConnectionError:
+            return None
+        except exceptions.HTTPNotFound:
             return None
 
         return self.model(**item)
