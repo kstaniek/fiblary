@@ -140,5 +140,5 @@ class Controller(object):
                     return self.schemas[schema_name]
                 else:
                     self.schemas[schema_name] = None
-                    _logger.info("Schema not found: {}".format(schema_name))
+                    _logger.warning("Schema not found: {}".format(schema_name))
                     return None
