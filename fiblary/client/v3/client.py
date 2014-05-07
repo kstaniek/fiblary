@@ -182,14 +182,16 @@ class Client(object):
     def __repr__(self):
         return "Home Center 2 Client"
 
-    def _on_properity_change(self, **kwargs):
+    def _on_property_change(self, **kwargs):
+        property_name = kwargs.get('property', None)
+        if not property_name:
+            return
         try:
-            property_name = kwargs['property']
             self.modified[property_name](**kwargs)
         except Exception:
             # trick to reduce number of exceptions
             with self.modified_lock:
-                self.modified[property_name] = EventHook()  # property_name
+                self.modified[property_name] = EventHook(property_name)  # property_name
 
     def _on_state_change(self, state):
         timestamp = state.get('timestamp', 0)
@@ -203,7 +205,7 @@ class Client(object):
                     'value': value,
                     'client': self
                 }
-                self._on_properity_change(**data)
+                self._on_property_change(**data)
 
 # API
 
