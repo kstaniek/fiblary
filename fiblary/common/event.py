@@ -73,7 +73,7 @@ class EventQueue(threading.Thread):
             try:
                 event, function, a, kw = self.queue.get(True, 120)
             except queue.Empty:
-                _logger.warning("Event queue timeout")
+                _logger.warning("Event queue timeout: {}".format(self.name))
                 continue
 
             if event == "EXIT":
