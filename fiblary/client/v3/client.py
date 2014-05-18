@@ -282,7 +282,8 @@ class StateHandler(threading.Thread):
                         "Connection Error. Attempt number: {}".format(
                             attempt)
                     )
-                    _logger.exception("Exception: {}".format(e))
+                    _logger.exception("Exception: {}".format(str(e)))
+                    _logger.exception("Exception: {}".format(dir(e)))
 
                     attempt += 1
 
