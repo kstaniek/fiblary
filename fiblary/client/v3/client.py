@@ -22,6 +22,7 @@
 import logging
 import threading
 import warlock
+import sys
 
 from fiblary.client.v3 import devices
 from fiblary.client.v3 import events
@@ -282,8 +283,8 @@ class StateHandler(threading.Thread):
                         "Connection Error. Attempt number: {}".format(
                             attempt)
                     )
+                    e = sys.exc_info()
                     _logger.exception("Exception: {}".format(str(e)))
-                    _logger.exception("Exception: {}".format(dir(e)))
 
                     attempt += 1
 
