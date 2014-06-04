@@ -54,7 +54,6 @@ def main():
 
     print("Open doors:")
     for device in open_doors:
-        print device
         room_id = device.roomID
         room_name = get_room_name_from_id(room_id)
         print("  {}({}) in {}".format(device.name, device.id, room_name))
