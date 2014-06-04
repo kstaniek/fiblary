@@ -23,5 +23,5 @@ from fiblary.client.v3 import base
 
 
 class Controller(base.ReadOnlyController):
-    RESOURCE = '/panels/event'
+    RESOURCE = 'panels/event'
     API_PARAMS = ('last', 'from', 'to', 'type', 'deviceID')

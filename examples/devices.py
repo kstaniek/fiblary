@@ -30,12 +30,14 @@ logging.basicConfig(
 def main():
     hc2 = Client(
         'v3',
-        'http://192.168.1.230/api',
+        'http://192.168.1.230/api/',
         'admin',
         'admin'
     )
 
     rooms = dict((room.id, room.name) for room in hc2.rooms.list())
+    for room in rooms.items():
+        print room
 
     def get_room_name_from_id(room_id):
         try:
@@ -52,6 +54,7 @@ def main():
 
     print("Open doors:")
     for device in open_doors:
+        print device
         room_id = device.roomID
         room_name = get_room_name_from_id(room_id)
         print("  {}({}) in {}".format(device.name, device.id, room_name))
@@ -143,14 +146,22 @@ def main():
 
     start = time.time()
     try:
-        device = hc2.devices.find(name=u'Blue lights')
-        value = device.properties['value']
-        if value == "1":
+        device = hc2.devices.find(id=206)
+        value = device.properties.value
+        print value
+        if value == '0':
+            device.turnOn()
+            time.sleep(2)
+            device.setValue(10)
+            print("\nBlue lights turned on")
+        else:
             device.turnOff()
             print("\nBlue lights turned off")
-        else:
-            device.turnOn()
-            print("\nBlue lights turned on")
+
+        #device.name = 'Remote'
+        #device = hc2.devices.update(device)
+        #print device.name
+
 
     except exceptions.NotFound:
         print("\nBlue Lights not found")
@@ -158,7 +169,7 @@ def main():
     print("Command execution time: {0:.2f}s".format(stop - start))
 
     try:
-        device = hc2.devices.find(type='binary_light')
+        device = hc2.devices.find(type='dimmable_light')
     except exceptions.NoUniqueMatch:
         print("\nMore then one device matching the criteria")
 

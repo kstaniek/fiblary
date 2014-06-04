@@ -69,7 +69,7 @@ def main():
 
     hc2 = Client(
         'v3',
-        'http://192.168.1.230/api',
+        'http://192.168.1.230/api/',
         'admin',
         'admin'
     )
@@ -84,8 +84,8 @@ def main():
     events = hc2.events.list(last='100', type='id')
     print_table(events, devices, rooms)
 
-    print("\nList of last 10 events for device id=114")
-    events = hc2.events.list(last='10', type='id', deviceID='114')
+    print("\nList of last 10 events for device id=366")
+    events = hc2.events.list(last='20', type='id', deviceID='366')
     print_table(events, devices, rooms)
 
     print(

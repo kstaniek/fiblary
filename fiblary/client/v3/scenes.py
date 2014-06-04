@@ -29,10 +29,10 @@ _logger = logging.getLogger(__name__)
 
 
 class Controller(base.CommonController):
-    RESOURCE = '/scenes'
+    RESOURCE = 'scenes'
 
     def _scene_control(self, scene_id, action):
-        cmd = "/sceneControl"
+        cmd = "sceneControl"
         params = {
             "id": scene_id,
             "action": action
@@ -62,3 +62,20 @@ class Controller(base.CommonController):
         scene = self._scene_control(scene_id, "disable")
         _logger.info("Scene {}({}) disabled".format(scene.name, scene.id))
         return scene
+
+    def update(self, data):
+        # scene is Null due to
+        # http://bugzilla.fibaro.com/view.php?id=1176
+        # must be retrieved again
+        scene = super(Controller, self).update(data)
+        try:
+            scene_id = data['id']
+            if scene_id:
+                _logger.warning(
+                    "Refer to: http://bugzilla.fibaro.com/view.php?id=1176")
+                scene = self.get(scene_id)
+        except:
+            pass
+
+        return scene
+

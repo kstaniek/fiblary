@@ -23,6 +23,7 @@ import logging
 import threading
 import warlock
 import sys
+from functools import partial, wraps
 
 from fiblary.client.v3 import devices
 from fiblary.client.v3 import events
@@ -30,7 +31,7 @@ from fiblary.client.v3 import info
 from fiblary.client.v3 import login
 from fiblary.client.v3 import rooms
 from fiblary.client.v3 import scenes
-from fiblary.client.v3 import schemas
+from fiblary.client.v3 import models
 from fiblary.client.v3 import sections
 from fiblary.client.v3 import users
 from fiblary.client.v3 import variables
@@ -43,6 +44,9 @@ from fiblary.common import restapi
 
 _logger = logging.getLogger(__name__)
 
+_schema_ignore = ["HC_user", "VOIP_user", "weather", 'iOS_device', '']
+
+
 
 class Client(object):
     """Home Center 2 Clinet Class.
@@ -50,6 +54,12 @@ class Client(object):
     throught the specialized controllers
     """
     def __init__(self, endpoint, username=None, password=None):
+
+        if '/api/' not in endpoint:
+            raise IOError("Wrong API string. It should be like: "
+                          "http://<hc2_ip>/api/")
+
+        # TODO(klstanie):  Add the HC2 reachability checking
 
         self.client = restapi.RESTApi(
             base_url=endpoint,
@@ -62,8 +72,6 @@ class Client(object):
         self.modified_lock = threading.Lock()
 
         # initialize the managers
-        self.schemas = schemas.Controller()
-
         self.info = info.Controller(
             self.client,
             self._get_info_model()
@@ -117,67 +125,53 @@ class Client(object):
         self.state_handler = None
 
     def _get_info_model(self):
-        schema = self.schemas.get('info')
-        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
-
-    def _get_login_model(self):
-        schema = self.schemas.get('login')
-        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
-
-    def _get_section_model(self):
-        schema = self.schemas.get('section')
-        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
-
-    def _get_room_model(self):
-        schema = self.schemas.get('room')
-        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
-
-    def _get_user_model(self):
-        schema = self.schemas.get('user')
-        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
-
-    def _get_variable_model(self):
-        schema = self.schemas.get('variable')
-        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
-
-    def _get_weather_model(self):
-        schema = self.schemas.get('weather')
-        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
-
-    def _get_event_model(self):
-        schema = self.schemas.get('event')
-        return warlock.model_factory(schema.raw(), schemas.SchemaBasedModel)
-
-    def _get_scene_model(self):
-        def model(**item):
-            schema = self.schemas.get('scene')
-            wrapped_model = warlock.model_factory(
-                schema.raw(),
-                schemas.SceneSchemaModel)
-            model = wrapped_model(**item)
-            model.controller = self.scenes
-            return model
+        def model(item):
+            return models.factory(self.info, item)
         return model
 
-    _schema_ignore = ["HC_user", "VOIP_user", "weather", 'iOS_device', '']
+    def _get_login_model(self):
+        def model(item):
+            return models.factory(self.login, item)
+        return model
+
+    def _get_section_model(self):
+        def model(item):
+            return models.factory(self.sections, item)
+        return model
+
+    def _get_room_model(self):
+        def model(item):
+            return models.factory(self.rooms, item)
+        return model
+
+    def _get_user_model(self):
+        def model(item):
+            return models.factory(self.users, item)
+        return model
+
+    def _get_variable_model(self):
+        def model(item):
+            return models.factory(self.variables, item)
+        return model
+
+    def _get_weather_model(self):
+        def model(item):
+            return models.factory(self.weather, item)
+        return model
+
+    def _get_event_model(self):
+        def model(item):
+            return models.factory(self.events, item)
+        return model
+
+    def _get_scene_model(self):
+        def model(item):
+            return models.factory(self.scenes, item)
+        return model
 
     def _get_device_model(self):
-        def model(**item):
-            item_type = item['type']
-            _logger.debug("Item type: {}".format(item_type))
-            if item_type in self._schema_ignore:
-                return None
-            schema = self.schemas.get(item_type)
-            if schema:
-                wrapped_model = warlock.model_factory(
-                    schema.raw(),
-                    schemas.ActionSchemaModel)
-                actions = item['actions']
-                model = wrapped_model(**item)
-                self.devices._add_actions(model, actions)
-                return model
-            else:
-                return None
+        def model(item):
+            return models.factory(self.devices, item)
         return model
 
     def __repr__(self):

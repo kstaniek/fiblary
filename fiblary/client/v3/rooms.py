@@ -23,5 +23,5 @@ from fiblary.client.v3 import base
 
 
 class Controller(base.CommonController):
-    RESOURCE = '/rooms'
+    RESOURCE = 'rooms'
     API_PARAMS = ('id', 'sectionID')

@@ -35,7 +35,7 @@ SCENE = """--[[
 --]]
 while true do
     fibaro:debug("test")
-    fibaro:sleep(1000)
+    fibaro:sleep(600)
     fibaro:debug("test2")
 end"""
 
@@ -65,13 +65,22 @@ def main():
 
     hc2 = Client(
         'v3',
-        'http://192.168.1.230/api',
+        'http://192.168.1.230/api/',
         'admin',
         'admin'
     )
 
     scenes = hc2.scenes.findall()
     print_table(scenes)
+
+
+    for scene_id in [scene.id for scene in hc2.scenes.findall()]:
+
+        scene = hc2.scenes.get(scene_id)
+        if scene.isLua:
+            print(u"LUA Scene: {}".format(scene.name))
+        else:
+            print(u"Block Scene: {}".format(scene.name))
 
     print("Provisioning new scene")
     scene = hc2.scenes.create(name="fiblaro_test_scene")
@@ -81,10 +90,6 @@ def main():
 
     scene_id = scene.id
     scene = hc2.scenes.update(scene)
-    # scene is Null due to
-    # http://bugzilla.fibaro.com/view.php?id=1176
-    # must be retrieved again
-    scene = hc2.scenes.get(scene_id)
 
     print("Scene code:\n{}".format(scene.lua))
 

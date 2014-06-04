@@ -79,7 +79,7 @@ class MinimalController(object):
         except exceptions.HTTPNotFound:
             return None
 
-        return self.model(**item)
+        return self.model(item)
 
 
 class ReadOnlyController(MinimalController):
@@ -97,13 +97,13 @@ class ReadOnlyController(MinimalController):
         json_path = kwargs.pop('jsonpath', None)
 
         # Home center ignores unknown parameters so there is no need to
-        # remove them from REST reqest.
+        # remove them from REST request.
         try:
             items = self.http_client.get(self.RESOURCE, params=kwargs).json()
         except exceptions.ConnectionError:
             return
 
-        # if there is no explicit defined json_path paramers
+        # if there is no explicit defined json_path parameters
         if json_path is None:
             for value in self.API_PARAMS:
                 kwargs.pop(value, None)
@@ -122,7 +122,7 @@ class ReadOnlyController(MinimalController):
                 # remaining parameters
 
                 json_path = "$[?({})]".format(condition_expression[:-5])
-                _logger.debug("Implicit JSON Path: {}".format(json_path))
+            _logger.debug("Implicit JSON Path: {}".format(json_path))
 
         if json_path:
             _logger.debug("JSON Path: {}".format(json_path))
@@ -132,8 +132,11 @@ class ReadOnlyController(MinimalController):
             else:
                 return
 
+        # in case there is only one item
+        if not isinstance(items, list):
+            items = [items]
         for item in items:
-            item_obj = self.model(**item)
+            item_obj = self.model(item)
             if item_obj:
                 yield item_obj
             else:
@@ -162,7 +165,7 @@ class ReadOnlyController(MinimalController):
     # depreciated
     def findall(self, **kwargs):
         _logger.warn(
-            "The 'findall' methon was depreciated. Use 'list' instead")
+            "The 'findall' method was depreciated. Use 'list' instead")
         return [item for item in self.list(**kwargs) if _check_items(
             item,
             six.iteritems(kwargs))]
@@ -174,7 +177,7 @@ class CommonController(ReadOnlyController):
     """
 
     def create(self, **kwargs):
-        item = self.model(**kwargs)
+        item = self.model(kwargs)
         for (key, value) in kwargs.items():
             try:
                 setattr(item, key, value)
@@ -192,7 +195,7 @@ class CommonController(ReadOnlyController):
                 "Invalid JSON format. Received: '{}'".format(response.text))
             return None
 
-        return self.model(**item)
+        return self.model(item)
 
     def delete(self, item_id):
         url = '{0}?id={1}'.format(self.RESOURCE, item_id)
@@ -210,8 +213,6 @@ class CommonController(ReadOnlyController):
         except ValueError:
             _logger.warning(
                 "Invalid JSON format. Received: '{}'".format(response.text))
-            _logger.warning(
-                "Refer to: http://bugzilla.fibaro.com/view.php?id=1176")
             return None
 
-        return self.model(**item)
+        return self.model(item)

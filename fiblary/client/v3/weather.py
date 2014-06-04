@@ -23,4 +23,4 @@ from fiblary.client.v3 import base
 
 
 class Controller(base.MinimalController):
-    RESOURCE = '/weather'
+    RESOURCE = 'weather'

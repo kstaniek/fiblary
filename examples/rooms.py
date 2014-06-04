@@ -71,7 +71,7 @@ def main():
 
     hc2 = Client(
         'v3',
-        'http://192.168.1.230/api',
+        'http://192.168.1.230/api/',
         'admin',
         'admin'
     )

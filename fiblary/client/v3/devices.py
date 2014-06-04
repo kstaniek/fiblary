@@ -30,19 +30,6 @@ import types
 _logger = logging.getLogger(__name__)
 
 
-def add_action(controller, model, k, v):
-    def action(k, *args, **kwargs):
-        _logger.info("{0}({1})->{2}{3}".format(model.name, model.id, k, args))
-        if len(args) != v:
-            # hack due to http://bugzilla.fibaro.com/view.php?id=1125
-            if k != 'setTargetLevel':
-                raise exceptions.WrongArgumentsNumber(k, v, len(args))
-
-        return controller.action(model.id, k, *args)
-
-    setattr(model, k, types.MethodType(action, k))
-
-
 # TODO(kstaniek):
 # http://hc2/api/devices?type=satel_partition
 # http://hc2/api/callAction?deviceID=312&name=removeFailedNodeId
@@ -50,20 +37,11 @@ def add_action(controller, model, k, v):
 
 
 class Controller(base.CommonController):
-    RESOURCE = '/devices'
+    RESOURCE = 'devices'
     API_PARAMS = ('id', 'type', 'roomID')
 
-    def _add_actions(self, model, actions):
-        for action, argn in six.iteritems(actions):
-            _logger.debug("{0}({1})<-{2}({3})".format(
-                model.name,
-                model.id,
-                action,
-                argn))
-            add_action(self, model, action, argn)
-
     def action(self, device_id, action, *args):
-        cmd = "/callAction?deviceID={0}&name={1}".format(device_id, action)
+        cmd = "callAction?deviceID={0}&name={1}".format(device_id, action)
         for i, arg in enumerate(args, 1):
             cmd = '{0}&arg{1}={2}'.format(cmd, i, arg)
 
@@ -78,6 +56,7 @@ class Controller(base.CommonController):
             """
             data.properties.pop("associationView")
             data.properties.pop("associationSet")
+
         except Exception:
             pass
 

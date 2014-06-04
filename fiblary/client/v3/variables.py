@@ -31,7 +31,7 @@ _logger = logging.getLogger(__name__)
 
 
 class Controller(base.CommonController):
-    RESOURCE = '/globalVariables'
+    RESOURCE = 'globalVariables'
 
     def get(self, item_id):
         url = '{0}?name={1}'.format(self.RESOURCE, item_id)

@@ -125,12 +125,12 @@ class RESTApi(object):
         if self.auth_header:
             kwargs['auth'] = self.auth_header
 
-        if 'json' in kwargs:
-            if isinstance(kwargs['json'], type({})):
-                kwargs['data'] = json.dumps(kwargs.pop('json'))
+        if kwargs.has_key('json'):
+            json_obj = kwargs.get('json', None)
+            if json_obj and isinstance(json_obj, (dict)):
+                kwargs['data'] = json.dumps(json_obj)
                 kwargs['headers']['Content-Type'] = 'application/json'
-            else:
-                kwargs.pop('json')
+            kwargs.pop('json')
 
         kwargs.setdefault('allow_redirects', True)
 
@@ -147,8 +147,8 @@ class RESTApi(object):
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.Timeout) as e:
             raise exceptions.ConnectionError(e.message)
-        except Exception as e:
-            raise e
+        #except Exception as e:
+        #    raise e
 
         if self.debug:
             self._log_response(response)
