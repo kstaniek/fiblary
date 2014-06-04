@@ -255,7 +255,7 @@ class StateHandler(threading.Thread):
 
                 try:
                     state = self.api.get(
-                        '/refreshStates?last={}'.format(last),
+                        'refreshStates?last={}'.format(last),
                         timeout=timeout)
                     _logger.debug(state)
                     try:
