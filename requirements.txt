@@ -5,5 +5,4 @@ prettytable>=0.7.2
 python-dateutil>=2.2
 requests>=2.1.0
 six>=1.4.1
-warlock>=1.1.0
 Sphinx>=1.2

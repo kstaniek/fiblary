@@ -23,7 +23,6 @@
 import jsonpath
 import logging
 import six
-import warlock
 
 from fiblary.common import exceptions
 from fiblary.common.utils import quote_if_string
@@ -64,12 +63,12 @@ class MinimalController(object):
         self.model = model
 
     def get(self, item_id):
-        """Returns :class:`warlock.model.Model` object representing an item
+        """Returns :class:`models.Model` object representing an item
         identified by ``item_id``
 
         :param item_id: This is an id of the requested object. The item_id
         encoded in GET request as the 'id' parameter
-        :returns: :class:`warlock.model.Model` object
+        :returns: :class:`models.Model` object
         """
         params = {"id": item_id}
         try:
@@ -179,10 +178,7 @@ class CommonController(ReadOnlyController):
     def create(self, **kwargs):
         item = self.model(kwargs)
         for (key, value) in kwargs.items():
-            try:
-                setattr(item, key, value)
-            except warlock.InvalidOperation as e:
-                raise TypeError(six.u(e))
+            setattr(item, key, value)
         try:
             response = self.http_client.post(self.RESOURCE, data=item)
         except exceptions.ConnectionError:

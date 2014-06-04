@@ -21,9 +21,7 @@
 """
 import logging
 import threading
-import warlock
 import sys
-from functools import partial, wraps
 
 from fiblary.client.v3 import devices
 from fiblary.client.v3 import events
@@ -49,9 +47,9 @@ _schema_ignore = ["HC_user", "VOIP_user", "weather", 'iOS_device', '']
 
 
 class Client(object):
-    """Home Center 2 Clinet Class.
+    """Home Center 2 Client Class.
     Provides interface to different resources managed by HC2
-    throught the specialized controllers
+    through the specialized controllers
     """
     def __init__(self, endpoint, username=None, password=None):
 
