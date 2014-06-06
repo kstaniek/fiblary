@@ -13,15 +13,6 @@ and sections defined on Home Center.
 Installation
 ------------
 
-Install PBR first because of pbr bug::
-    
-    pip install pbr
-    
-Then install jsonpath. There is an issue when installing with ``pip``
-so use ``easy_install``::
-    
-    easy_install jsonpath
-    
 Then clone and install fiblary::
     
     git clone https://github.com/kstaniek/fiblary.git
@@ -51,7 +42,7 @@ It's easiest to to get some basic information about the Home Center::
     from fiblary.client import Client
     
     # Connect to Home Center
-    hc = Client('v3', 'http://192.168.1.1/api', 'admin', 'admin')
+    hc = Client('v3', 'http://192.168.1.1/api/', 'admin', 'admin')
     
     # Retrieve the basic info as returned by /api/info
     info = hc.info.get()
@@ -70,7 +61,7 @@ The returned ``info`` behaves like a dictionary::
     
     print info['softVersion']
     
-but also like a proprerty::
+but also like a property::
 
     print info.softVersion
 
