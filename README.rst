@@ -13,7 +13,7 @@ and sections defined on Home Center.
 Installation
 ------------
 
-Current fiblary module is provided as PyPi package. To install on a unix based system use pip
+Current fiblary module is provided as PyPi package. To install on a unix based system use pip::
     
     pip install fiblary
 
