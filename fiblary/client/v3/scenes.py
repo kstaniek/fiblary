@@ -74,8 +74,7 @@ class Controller(base.CommonController):
                 _logger.warning(
                     "Refer to: http://bugzilla.fibaro.com/view.php?id=1176")
                 scene = self.get(scene_id)
-        except:
+        except Exception:
             pass
 
         return scene
-

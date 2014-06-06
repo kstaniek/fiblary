@@ -23,8 +23,6 @@ from fiblary.client.v3 import base
 from fiblary.common import exceptions
 
 import logging
-import six
-import types
 
 
 _logger = logging.getLogger(__name__)

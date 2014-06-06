@@ -125,7 +125,7 @@ class RESTApi(object):
         if self.auth_header:
             kwargs['auth'] = self.auth_header
 
-        if kwargs.has_key('json'):
+        if 'json' in kwargs:
             json_obj = kwargs.get('json', None)
             if json_obj and isinstance(json_obj, (dict)):
                 kwargs['data'] = json.dumps(json_obj)
@@ -147,8 +147,9 @@ class RESTApi(object):
         except (requests.exceptions.ConnectionError,
                 requests.exceptions.Timeout) as e:
             raise exceptions.ConnectionError(e.message)
-        #except Exception as e:
-        #    raise e
+
+        except Exception as e:
+            raise e
 
         if self.debug:
             self._log_response(response)

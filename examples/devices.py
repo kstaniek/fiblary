@@ -37,7 +37,7 @@ def main():
 
     rooms = dict((room.id, room.name) for room in hc2.rooms.list())
     for room in rooms.items():
-        print room
+        print(room)
 
     def get_room_name_from_id(room_id):
         try:
@@ -145,25 +145,19 @@ def main():
 
     start = time.time()
     try:
-        device = hc2.devices.find(id=206)
+        device = hc2.devices.find(name='Blue light')
         value = device.properties.value
-        print value
         if value == '0':
             device.turnOn()
             time.sleep(2)
             device.setValue(10)
-            print("\nBlue lights turned on")
+            print("\nBlue Light turned on")
         else:
             device.turnOff()
-            print("\nBlue lights turned off")
-
-        #device.name = 'Remote'
-        #device = hc2.devices.update(device)
-        #print device.name
-
+            print("\nBlue Light turned off")
 
     except exceptions.NotFound:
-        print("\nBlue Lights not found")
+        print("\nBlue Light not found")
     stop = time.time()
     print("Command execution time: {0:.2f}s".format(stop - start))
 

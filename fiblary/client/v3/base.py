@@ -20,7 +20,8 @@
 
 """
 
-import jsonpath
+import fiblary.external.jsonpath as jsonpath
+
 import logging
 import six
 

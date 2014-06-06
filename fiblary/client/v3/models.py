@@ -20,15 +20,16 @@
 
 """
 
+import functools
 import jsonpatch
 import logging
 import six
-import functools
 
 _logger = logging.getLogger(__name__)
 
 
 _type_ignore = ["HC_user", "VOIP_user", "weather", 'iOS_device', '']
+
 
 def factory(controller, item):
     # try as item could be anything
@@ -137,9 +138,11 @@ class DeviceModel(GenericModel):
     def __init__(self, controller, item):
         super(DeviceModel, self).__init__(controller, item)
 
-        if self.has_key('actions'):
+        if 'actions' in self:
             def action(action_name, argn, *args, **kwargs):
-                _logger.info("{0}({1})->{2}{3}".format(self.name, self.id, action_name, args))
+                _logger.info("{0}({1})->{2}{3}".format(
+                    self.name, self.id, action_name, args)
+                )
                 if len(args) != argn:
                     # hack due to http://bugzilla.fibaro.com/view.php?id=1125
                     if action_name != 'setTargetLevel':

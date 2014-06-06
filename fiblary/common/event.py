@@ -50,9 +50,10 @@ class EventQueue(threading.Thread):
     def error(self, error, function, a=(), kw=None):
         """Called when function raises error.
         """
-        _logger.exception("EventQueue event raised exception "
-                        "({}, {}, {}):{}".format(
-                            function, a, kw or {}, error))
+        _logger.exception(
+            "EventQueue event raised exception ({}, {}, {}):{}".format(
+                function, a, kw or {}, error)
+        )
 
     def put(self, event, function=None, a=(), kw=None):
         """Queue the call to function, return the number of the call.

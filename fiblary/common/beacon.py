@@ -58,7 +58,7 @@ class Beacon(threading.Thread):
 
         sock.close()
 
-#b = Beacon('HC2-999329')
-#b.daemon = True
-#b.start()
-#time.sleep(10000)
+# b = Beacon('HC2-999329')
+# b.daemon = True
+# b.start()
+# time.sleep(10000)

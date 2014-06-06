@@ -20,16 +20,16 @@
 
 """
 import logging
-import threading
 import sys
+import threading
 
 from fiblary.client.v3 import devices
 from fiblary.client.v3 import events
 from fiblary.client.v3 import info
 from fiblary.client.v3 import login
+from fiblary.client.v3 import models
 from fiblary.client.v3 import rooms
 from fiblary.client.v3 import scenes
-from fiblary.client.v3 import models
 from fiblary.client.v3 import sections
 from fiblary.client.v3 import users
 from fiblary.client.v3 import variables
@@ -43,7 +43,6 @@ from fiblary.common import restapi
 _logger = logging.getLogger(__name__)
 
 _schema_ignore = ["HC_user", "VOIP_user", "weather", 'iOS_device', '']
-
 
 
 class Client(object):
@@ -184,7 +183,7 @@ class Client(object):
         except Exception:
             # trick to reduce number of exceptions
             with self.modified_lock:
-                self.modified[property_name] = EventHook(property_name)  # property_name
+                self.modified[property_name] = EventHook(property_name)
 
     def _on_state_change(self, state):
         timestamp = state.get('timestamp', 0)
@@ -260,7 +259,7 @@ class StateHandler(threading.Thread):
                     _logger.debug(state)
                     try:
                         state = state.json()
-                    except:
+                    except Exception:
                         _logger.critical("JSON ERROR: {}".format(state))
                         raise
                     last = state['last']
@@ -301,6 +300,5 @@ class StateHandler(threading.Thread):
     def stop(self):
         _logger.info("Stopping the state change handler")
 
-        self.api.session.close()  # unfortunatelly not effect on
-                                  # pending request
+        self.api.session.close()  # not effect on pending request
         self._stop.set()

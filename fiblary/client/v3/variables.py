@@ -25,7 +25,7 @@ import logging
 from fiblary.client.v3 import base
 from fiblary.common import exceptions
 
-#TODO(kstaniek): Handle predefined variables
+# TODO(kstaniek): Handle predefined variables
 
 _logger = logging.getLogger(__name__)
 

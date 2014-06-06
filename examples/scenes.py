@@ -73,7 +73,6 @@ def main():
     scenes = hc2.scenes.findall()
     print_table(scenes)
 
-
     for scene_id in [scene.id for scene in hc2.scenes.findall()]:
 
         scene = hc2.scenes.get(scene_id)
@@ -83,7 +82,7 @@ def main():
             print(u"Block Scene: {}".format(scene.name))
 
     print("Provisioning new scene")
-    scene = hc2.scenes.create(name="fiblaro_test_scene")
+    scene = hc2.scenes.create(name="fiblary_test_scene")
     scene.isLua = True
     scene.lua = SCENE
     scene.html = ""
@@ -96,21 +95,21 @@ def main():
     scene.start()
     print("Scene {} running for 1 minute".format(scene_id))
 
-    scenes = hc2.scenes.list(name="fiblaro_test_scene")
+    scenes = hc2.scenes.list(name="fiblary_test_scene")
     print_table(scenes)
 
     time.sleep(60)
 
     print("Scene {} stopping".format(scene_id))
     scene.stop()
-    scenes = hc2.scenes.list(name="fiblaro_test_scene")
+    scenes = hc2.scenes.list(name="fiblary_test_scene")
     print_table(scenes)
 
     print("Deleting test scenes")
-    for scene in hc2.scenes.list(name="fiblaro_test_scene"):
+    for scene in hc2.scenes.list(name="fiblary_test_scene"):
         hc2.scenes.delete(scene.id)
 
-    scenes = hc2.scenes.findall(name="fiblaro_test_scene")
+    scenes = hc2.scenes.findall(name="fiblary_test_scene")
     print_table(scenes)
 
     exit()
