@@ -13,12 +13,10 @@ and sections defined on Home Center.
 Installation
 ------------
 
-Then clone and install fiblary::
+Current fiblary module is provided as PyPi package. To install on a unix based system use pip
     
-    git clone https://github.com/kstaniek/fiblary.git
-    cd fiblary
-    python setup.py install
-     
+    pip install fiblary
+
 
 Basic usage
 -----------
