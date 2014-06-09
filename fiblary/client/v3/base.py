@@ -22,6 +22,7 @@
 
 import fiblary.external.jsonpath as jsonpath
 
+from itertools import imap, ifilterfalse
 import logging
 import six
 
@@ -57,11 +58,36 @@ class MinimalController(object):
     This speed up the list operation
     """
 
-    JSON_CONDITION_BASE = "(@.{0}=={1})"
-
     def __init__(self, http_client, model):
         self.http_client = http_client
         self.model = model
+
+    def _get(self, **kwargs):
+
+        try:
+            item = self.http_client.get(self.RESOURCE, params=kwargs).json()
+        except exceptions.ConnectionError:
+            return None
+        except exceptions.HTTPNotFound:
+            return None
+
+        return item
+
+    def get(self):
+        """Returns :class:`models.Model` object representing. This is
+        applicable for single instance requests i.e. login, info, weather
+
+        :returns: :class:`models.Model` object
+        """
+        item = self._get()
+        return self.model(item)
+
+
+class ReadOnlyController(MinimalController):
+    """Read only controller class used for controllers using get and list
+    methods only
+    """
+    JSON_CONDITION_BASE = "(@.{0}=={1})"
 
     def get(self, item_id):
         """Returns :class:`models.Model` object representing an item
@@ -71,25 +97,25 @@ class MinimalController(object):
         encoded in GET request as the 'id' parameter
         :returns: :class:`models.Model` object
         """
+
+        # item_it must not be None.
+        if item_id is None:
+            _logger.debug("Called 'get' method with none id")
+            return None
+
         params = {"id": item_id}
-        try:
-            item = self.http_client.get(self.RESOURCE, params=params).json()
-        except exceptions.ConnectionError:
-            return None
-        except exceptions.HTTPNotFound:
-            return None
-
-        return self.model(item)
-
-
-class ReadOnlyController(MinimalController):
-    """Read only controller class used for controllers using get and list
-    methods only
-    """
+        return self._get(**params)
 
     def list(self, **kwargs):
+        """
+        :param kwargs: This is a dictionary of parameters passed to GET
+        :type kwargs:
+        :return: Returns an iterator
+        :rtype: iterator function
+        """
         _logger.debug(self.RESOURCE)
         _logger.debug(type(self))
+        _logger.debug(kwargs)
 
         # Pop jsonpath if exists and pass the rest of arguments to API
         # for some API calls home center handles additional parameters
@@ -98,10 +124,7 @@ class ReadOnlyController(MinimalController):
 
         # Home center ignores unknown parameters so there is no need to
         # remove them from REST request.
-        try:
-            items = self.http_client.get(self.RESOURCE, params=kwargs).json()
-        except exceptions.ConnectionError:
-            return
+        items = self.http_client.get(self.RESOURCE, params=kwargs).json()
 
         # if there is no explicit defined json_path parameters
         if json_path is None:
@@ -130,17 +153,11 @@ class ReadOnlyController(MinimalController):
             if filtered_items:
                 items = filtered_items
             else:
-                return
+                items = []
 
         # in case there is only one item
-        if not isinstance(items, list):
-            items = [items]
-        for item in items:
-            item_obj = self.model(item)
-            if item_obj:
-                yield item_obj
-            else:
-                continue
+        items = items if isinstance(items, list) else [items]
+        return ifilterfalse(lambda i: i is None, imap(self.model, items))
 
     def find(self, **kwargs):
         """Find single item with attributes matching ``**kwargs``.

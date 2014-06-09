@@ -1,3 +1,7 @@
+## 0.1.3
+
+  - fixed issue #3  - Get method withouth parameters for info, login and weather managers
+
 ## 0.1.2
 
   - Simplified the installation.
