@@ -104,7 +104,8 @@ class ReadOnlyController(MinimalController):
             return None
 
         params = {"id": item_id}
-        return self._get(**params)
+        item = self._get(**params)
+        return self.model(item)
 
     def list(self, **kwargs):
         """
