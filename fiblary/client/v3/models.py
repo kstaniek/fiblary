@@ -116,8 +116,8 @@ class RecursiveDict(dict):
             # actions are callable so added only to the local dict
             self.__dict__[key] = value
 
-    def __getitem__(self, key, default):
-        return dict.__getitem__(self, key, default)
+    def __getitem__(self, key):
+        return dict.__getitem__(self, key)
 
     def setdefault(self, key, default=None):
         if key not in self:
